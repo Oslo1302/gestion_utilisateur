@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\PassagerRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
@@ -38,8 +40,20 @@ class Passager
     #[ORM\Column]
     private ?\DateTimeImmutable $created_at = null;
 
+    #[ORM\OneToMany(mappedBy: 'nom', targetEntity: Destination::class)]
+    private Collection $destinations;
+
+    #[ORM\ManyToMany(targetEntity: TypeVoyage::class, mappedBy: 'nom')]
+    private Collection $typeVoyages;
+
+    #[ORM\ManyToMany(targetEntity: DureeSejour::class, mappedBy: 'nom')]
+    private Collection $dureeSejours;
+
     public function __construct() {
         $this->created_at = new \DateTimeImmutable();
+        $this->destinations = new ArrayCollection();
+        $this->typeVoyages = new ArrayCollection();
+        $this->dureeSejours = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -139,6 +153,90 @@ class Passager
     public function setCreatedAt(\DateTimeImmutable $created_at): self
     {
         $this->created_at = $created_at;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Destination>
+     */
+    public function getDestinations(): Collection
+    {
+        return $this->destinations;
+    }
+
+    public function addDestination(Destination $destination): self
+    {
+        if (!$this->destinations->contains($destination)) {
+            $this->destinations->add($destination);
+            $destination->setNom($this);
+        }
+
+        return $this;
+    }
+
+    public function removeDestination(Destination $destination): self
+    {
+        if ($this->destinations->removeElement($destination)) {
+            // set the owning side to null (unless already changed)
+            if ($destination->getNom() === $this) {
+                $destination->setNom(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, TypeVoyage>
+     */
+    public function getTypeVoyages(): Collection
+    {
+        return $this->typeVoyages;
+    }
+
+    public function addTypeVoyage(TypeVoyage $typeVoyage): self
+    {
+        if (!$this->typeVoyages->contains($typeVoyage)) {
+            $this->typeVoyages->add($typeVoyage);
+            $typeVoyage->addNom($this);
+        }
+
+        return $this;
+    }
+
+    public function removeTypeVoyage(TypeVoyage $typeVoyage): self
+    {
+        if ($this->typeVoyages->removeElement($typeVoyage)) {
+            $typeVoyage->removeNom($this);
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, DureeSejour>
+     */
+    public function getDureeSejours(): Collection
+    {
+        return $this->dureeSejours;
+    }
+
+    public function addDureeSejour(DureeSejour $dureeSejour): self
+    {
+        if (!$this->dureeSejours->contains($dureeSejour)) {
+            $this->dureeSejours->add($dureeSejour);
+            $dureeSejour->addNom($this);
+        }
+
+        return $this;
+    }
+
+    public function removeDureeSejour(DureeSejour $dureeSejour): self
+    {
+        if ($this->dureeSejours->removeElement($dureeSejour)) {
+            $dureeSejour->removeNom($this);
+        }
 
         return $this;
     }

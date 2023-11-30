@@ -2,6 +2,9 @@
 
 namespace App\Controller\Admin;
 
+use App\Entity\Destination;
+use App\Entity\DureeSejour;
+use App\Entity\ListeDeRecherche;
 use App\Entity\Passager;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Dashboard;
 use EasyCorp\Bundle\EasyAdminBundle\Config\MenuItem;
@@ -50,5 +53,8 @@ class DashboardController extends AbstractDashboardController
     {
         yield MenuItem::linkToDashboard('Dashboard', 'fa fa-home');
         yield MenuItem::linkToCrud('Liste des passagers', 'fas fa-list', Passager::class);
+        yield MenuItem::linkToCrud('Destination', 'fas fa-plane', Destination::class);
+        yield MenuItem::linkToCrud('Durée du sejour', 'fas fa-plane', DureeSejour::class);
+        yield MenuItem::linkToCrud('Liste de recherche', 'fas fa-warning', ListeDeRecherche::class);
     }
 }
